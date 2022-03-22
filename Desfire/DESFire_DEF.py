@@ -1,8 +1,11 @@
 from enum import Enum
 import struct
-from Crypto.Cipher import DES, DES3, AES
-from Crypto import Random
-from Crypto.Util.strxor import strxor
+#from Crypto.Cipher import DES, DES3, AES
+from Cryptodome.Cipher import DES, DES3, AES
+#from Crypto import Random
+from Cryptodome import Random
+#from Crypto.Util.strxor import strxor
+from Cryptodome.Util.strxor import strxor
 from .util import *
 
 def chunks(data, n):
@@ -223,6 +226,7 @@ class DESFireKey():
             self.ClearIV()
             self.ciphermod = AES
             self.Cipher = AES.new(bytes(self.keyBytes), AES.MODE_CBC, bytes(self.IV))
+            print("Initialised Cipher for AES")
 
         elif self.keyType == DESFireKeyType.DF_KEY_2K3DES:
         #DES is used
@@ -231,12 +235,14 @@ class DESFireKey():
                 self.ClearIV()
                 self.ciphermod = DES
                 self.Cipher = DES.new(bytes(self.keyBytes), DES.MODE_CBC, bytes(self.IV))
+                print("Initialised Cipher for DES")
         #2DES is used (3DES with 2 keys only)
             elif self.keySize == 16:
                 self.CipherBlocksize = 8
                 self.ciphermod = DES3
                 self.ClearIV()
                 self.Cipher = DES3.new(bytes(self.keyBytes), DES.MODE_CBC, bytes(self.IV))
+                print("Initialised Cipher for 2DES")
 
             else:
                 raise Exception('Key length error!')
@@ -247,6 +253,7 @@ class DESFireKey():
             self.CipherBlocksize = 8
             self.ClearIV()
             self.Cipher = DES3.new(bytes(self.keyBytes), DES.MODE_CBC, bytes(self.IV))
+            print("Initialised Cipher for 3DES")
 
         else:
             raise Exception('Unknown key type!')

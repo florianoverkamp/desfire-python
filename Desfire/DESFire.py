@@ -5,7 +5,8 @@ import logging
 import time
 
 import random
-import pyDes
+#import pyDes
+from Cryptodome.Cipher import DES3
 from .device import Device
 from .DESFire_DEF import *
 from .util import byte_array_to_human_readable_hex
@@ -53,7 +54,8 @@ class DESFire:
         """
 
         initial_value = b"\00" * 8
-        k = pyDes.triple_des(bytes(private_key), pyDes.CBC, initial_value, pad=None, padmode=pyDes.PAD_NORMAL)
+        #k = pyDes.triple_des(bytes(private_key), pyDes.CBC, initial_value, pad=None, padmode=pyDes.PAD_NORMAL)
+        k = DES3.new(private_key, MODE_CBC, iv=initial_value)
 
         decrypted = [b for b in (k.decrypt(bytes(response)))]
         import pdb ; pdb.set_trace()

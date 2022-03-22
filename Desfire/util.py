@@ -6,12 +6,15 @@ import crcmod.predefined
 
 if sys.version_info[0] == 2 and sys.version_info[1] == 1:
     from Crypto.Util.py21compat import *
-from Crypto.Util.py3compat import *
+#from Crypto.Util.py3compat import *
+from Cryptodome.Util.py3compat import *
 import json
 from binascii import unhexlify
 
-from Crypto.Util.strxor import strxor
-from Crypto.Util.number import long_to_bytes, bytes_to_long
+#from Crypto.Util.strxor import strxor
+from Cryptodome.Util.strxor import strxor
+#from Crypto.Util.number import long_to_bytes, bytes_to_long
+from Cryptodome.Util.number import long_to_bytes, bytes_to_long
 
 
 def byte_array_to_human_readable_hex(bytes):
