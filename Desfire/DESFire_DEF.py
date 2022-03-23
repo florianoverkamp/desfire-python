@@ -225,7 +225,7 @@ class DESFireKey():
             self.CipherBlocksize = 16
             self.ClearIV()
             self.ciphermod = AES
-            self.Cipher = AES.new(bytes(self.keyBytes), AES.MODE_CBC, bytes(self.IV))
+            #self.Cipher = AES.new(bytes(self.keyBytes), AES.MODE_CBC, bytes(self.IV))
             print("Initialised Cipher for AES")
 
         elif self.keyType == DESFireKeyType.DF_KEY_2K3DES:
@@ -234,14 +234,14 @@ class DESFireKey():
                 self.CipherBlocksize = 8
                 self.ClearIV()
                 self.ciphermod = DES
-                self.Cipher = DES.new(bytes(self.keyBytes), DES.MODE_CBC, bytes(self.IV))
+                #self.Cipher = DES.new(bytes(self.keyBytes), DES.MODE_CBC, bytes(self.IV))
                 print("Initialised Cipher for DES")
         #2DES is used (3DES with 2 keys only)
             elif self.keySize == 16:
                 self.CipherBlocksize = 8
                 self.ciphermod = DES3
                 self.ClearIV()
-                self.Cipher = DES3.new(bytes(self.keyBytes), DES.MODE_CBC, bytes(self.IV))
+                #self.Cipher = DES3.new(bytes(self.keyBytes), DES.MODE_CBC, bytes(self.IV))
                 print("Initialised Cipher for 2DES")
 
             else:
@@ -251,8 +251,9 @@ class DESFireKey():
             assert self.keySize == 24
             #3DES is used
             self.CipherBlocksize = 8
+            self.ciphermod = DES3	# added, not sure if needed. seems like a fallback option of sorts
             self.ClearIV()
-            self.Cipher = DES3.new(bytes(self.keyBytes), DES.MODE_CBC, bytes(self.IV))
+            #self.Cipher = DES3.new(bytes(self.keyBytes), DES.MODE_CBC, bytes(self.IV))
             print("Initialised Cipher for 3DES")
 
         else:
@@ -289,6 +290,10 @@ class DESFireKey():
     def Encrypt(self, data):
         #todo assert on blocksize
         self.IV = data[-self.CipherBlocksize:]
+        print("DEBUG: in Encrypt, cipher = %s", self.ciphermod)
+        if self.ciphermod is DES: self.Cipher = DES.new(bytes(self.keyBytes), DES.MODE_CBC, bytes(self.IV))
+        if self.ciphermod is DES3: self.Cipher = DES3.new(bytes(self.keyBytes), DES.MODE_CBC, bytes(self.IV))
+        if self.ciphermod is AES: self.Cipher = AES.new(bytes(self.keyBytes), AES.MODE_CBC, bytes(self.IV))
         return list(bytearray(self.Cipher.encrypt(bytes(data))))
 
     def EncryptMsg(self, data, withCRC=False, encryptBegin=1):
@@ -305,6 +310,10 @@ class DESFireKey():
 
     def Decrypt(self, dataEnc):
         #todo assert on blocksize
+        print("DEBUG: in Decrypt, cipher = %s", self.ciphermod)
+        if self.ciphermod is DES: self.Cipher = DES.new(bytes(self.keyBytes), DES.MODE_CBC, bytes(self.IV))
+        if self.ciphermod is DES3: self.Cipher = DES3.new(bytes(self.keyBytes), DES.MODE_CBC, bytes(self.IV))
+        if self.ciphermod is AES: self.Cipher = AES.new(bytes(self.keyBytes), AES.MODE_CBC, bytes(self.IV))
         block = self.Cipher.decrypt(bytes(dataEnc))
         self.IV = block[-self.CipherBlocksize:]
         return list(bytearray(block))
